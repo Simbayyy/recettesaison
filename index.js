@@ -1,29 +1,227 @@
 const recipeButton = document.querySelector("#recipebutton");
 const recipeHolder = document.querySelector("#recipeholder");
 
-recipeButton.addEventListener('click', () => grabPage('blette'));
+//recipeButton.addEventListener('click', () => grabPage('blette'));
 
 const grabPage = function(string){
     url = `https://www.marmiton.org/recettes/recherche.aspx?aqt=${string}`
-    const html = fetch(url, 
-        {
-            method: "GET", 
-        }
-    ).then(response => response.json())
-    .then(data => {
-        const doc = new DOMParser().parseFromString(html, 'text/html');
-        recipeHolder.textContent=doc.title;
+    x=new XMLHttpRequest();
+    x.open('GET', 'https://calm-sierra-13075.herokuapp.com/'+url);
+    x.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+    x.onload = function() {
+        parser=new DOMParser();
+        page = parser.parseFromString(x.responseText,"text/html");  
+        recipes = page.querySelectorAll('.gACiYG');
+        recipes.forEach((recipe) =>{
+            recipeHolder.textContent += 'success'
+            recipeHolder.textContent += '<br>' + recipe.getAttribute('href')
         })
-    .catch((err) => {
-        console.log(err)
-    })    ; // html as text
+        };
+    x.send();
+     
+}
+bar = document.getElementById('inputbar')
+box = document.getElementById('vegetarian')
+saucebox = document.getElementById('sauce')
 
+let chocolateRecipes 
+let randlist = []
+let startIndex
+
+async function grabList(){
+    let recipes
+    await fetch("RecipeList.json")
+        .then(response => response.json())
+        .then(json => recipes= json);
+    document.getElementById('inputbar').disabled = false;
+    return recipes
 }
-function getSourceAsDOM(url)
-{
-    xmlhttp=new XMLHttpRequest();
-    xmlhttp.open("GET",url,false);
-    xmlhttp.send();
-    parser=new DOMParser();
-    return parser.parseFromString(xmlhttp.responseText,"text/html");      
+
+let sort =  function(listToSort,keyword){
+    return listToSort.filter(function(recipe){
+        if (Array(keyword)[0] === keyword){
+            ok = true;
+            keyword.forEach(word =>{
+                if (ok == true){
+                    ok = (cleanWord(' '+recipe.name+' ').includes(' '+cleanWord(word)+' '))
+                }
+            })
+            return ok;
+        }else{
+            return (cleanWord(recipe.name).includes(cleanWord(keyword)));
+        }
+    });
 }
+
+let sortExcept =  function(listToSort,keyword){
+    return listToSort.filter(function(recipe){
+        ok = true;
+        if (Array(keyword)[0] === keyword){
+            keyword.forEach(word =>{
+                if (ok == true){
+                    ok = !(cleanWord(' '+recipe.name+' ').includes(' '+cleanWord(word)+' '))
+                }
+            })
+            return ok;
+        }else{
+            return !(cleanWord(recipe.name).includes(keyword));
+        }
+    });
+}
+
+let cleanWord = function(word){
+    return word.toLowerCase().replace(/[ \n,;.:/!?\-%&'\(`\)\$€]/g,' ').replace(/\u0153/g,'oe')
+}
+
+let treatEntry = function(entry){
+    wordsToSearch = ['']
+    wordsToAvoid = []
+    search=true
+    for (var i = 0; i < entry.length;i++){
+        if (entry[i]=='-'){
+            search = false
+            wordsToAvoid.push('')
+        }else if (' +'.includes(entry[i])){
+            search = true
+            wordsToSearch.push('')
+        }else{
+            if (search == true){
+                wordsToSearch[wordsToSearch.length-1] =wordsToSearch[wordsToSearch.length-1]+ entry[i]
+            }else{
+                wordsToAvoid[wordsToAvoid.length-1] = wordsToAvoid[wordsToAvoid.length-1] + entry[i]
+            }
+        }
+    }
+    return [wordsToSearch,wordsToAvoid]
+}
+function shuffle(array) {
+    let currentIndex = array.length,  randomIndex;
+
+    // While there remain elements to shuffle.
+    while (currentIndex != 0) {
+
+        // Pick a remaining element.
+        randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex--;
+
+        // And swap it with the current element.
+        [array[currentIndex], array[randomIndex]] = [
+        array[randomIndex], array[currentIndex]];
+    }
+
+    return array;
+}
+let displayResults = function(results,startIndex){
+    resultlen = results.length
+
+    if (randlist.length != resultlen){
+        list = [...Array(resultlen).keys()]
+        randlist = shuffle(list)
+    }
+
+    for (i=startIndex;i<startIndex+NB_RESULTS;i++){
+        if (i <resultlen){
+            createEntry(results[randlist[i]],i-startIndex)
+        }
+    }
+}
+recipeSpace = document.getElementById('recipeholder') 
+
+let createEntry = function(recipe,i){
+    newRecipeContainer = document.createElement('div')
+    newRecipeContainer.setAttribute('class','recipeContainer')
+    newRecipeContainer.setAttribute('id','container'+i)
+
+    newRecipeName = document.createElement('div')
+    
+    newRecipeName.setAttribute('class','recipeName')
+    newRecipeName.setAttribute('id','name'+i)
+    newRecipeName.textContent = recipe['name']
+    newRecipePanel = document.createElement('div')
+    newRecipePanel.setAttribute('class','recipePanel')
+    newRecipePanel.setAttribute('id','panel'+i)
+    newRecipePanel.setAttribute('hidden','true')
+
+    newRecipeLink = document.createElement('a')
+    newRecipeLink.setAttribute('href',recipe['url'])
+    newRecipeLink.textContent = 'Lien vers la recette'
+
+    newRecipeTime = document.createElement('div')
+    //prepTime = recipe["prepTime"].replace('PT','').replace('M','')
+    //cookTime = recipe["cookTime"].replace('PT','').replace('M','')
+    //newRecipeTime.textContent = `${prepTime} minutes de préparation et ${cookTime} minutes de cuisson`
+
+    newRecipeName.addEventListener("click", function(){
+        panel = document.getElementById('panel'+i)
+        if (panel.getAttribute('hidden') == 'true'){
+            panel.removeAttribute('hidden')
+        }else{
+            panel.setAttribute('hidden', 'true')
+        }
+    })
+    newRecipePanel.appendChild(newRecipeLink)
+    newRecipePanel.appendChild(newRecipeTime)
+    newRecipeContainer.appendChild(newRecipeName)
+    newRecipeContainer.appendChild(newRecipePanel)
+    
+
+    recipeSpace.appendChild(newRecipeContainer)
+}
+
+let clean = function(string){
+    return encodeURIComponent(string.toLowerCase())
+}
+
+async function grabRecipes(string, amount=100, vg=0, sauce=0){
+    
+    var myHeaders = new Headers()
+    myHeaders.append("Content-Type", "application/x-www-form-urlencoded")
+    requestParams = {
+        method: 'POST',
+        headers: myHeaders,
+        amount:amount,
+        vg:vg
+    }
+    let recipesFiltered
+    await fetch(`https://calm-sierra-13075.herokuapp.com/https://thawing-taiga-23689.herokuapp.com/recipes/${string}/${vg}/${sauce}`)
+        .then(response => response.json())
+        .then(json => recipesFiltered= json);
+    console.log(recipesFiltered)
+    return recipesFiltered
+}
+
+let NB_RESULTS =10
+let results = []
+let vegetarianWords = ['ham','meat','chicken','lamb','bacon','fish','rib','beef','pork','ribs','shrimp','salmon','meatballs','meatloaf','meatball','meatloaves','tuna','duck','prosciutto']
+let saucewords = ['sauce','marinade']
+
+bar.addEventListener('keypress',async function (e) {
+    if (e.key === 'Enter') {
+        bar.setAttribute('disabled','true')
+        let vg = 0
+        let sauce =0
+        if (box.checked){
+            vg =1
+        }
+        if (saucebox.checked){
+            sauce =1
+        }
+        results = await grabRecipes(clean(bar.value), vg=vg,sauce=sauce)
+        entry=treatEntry(bar.value)
+        bar.value = ""
+        bar.removeAttribute('disabled')
+        recipeSpace.innerHTML = ""
+        startIndex = 0
+        displayResults(results.results,0)
+    }
+})
+
+recipeButton.addEventListener('click',() =>{
+    recipeSpace.innerHTML = ""
+    displayResults(results.results, startIndex+=10)
+})
+
+//initialize()
+
+
+
