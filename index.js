@@ -147,9 +147,17 @@ let createEntry = function(recipe,i){
     newRecipeLink.textContent = 'Lien vers la recette'
 
     newRecipeTime = document.createElement('div')
-    //prepTime = recipe["prepTime"].replace('PT','').replace('M','')
-    //cookTime = recipe["cookTime"].replace('PT','').replace('M','')
-    //newRecipeTime.textContent = `${prepTime} minutes de préparation et ${cookTime} minutes de cuisson`
+    if (recipe.hasOwnProperty("prepTime")){
+        prepTime = recipe["prepTime"].replace('PT','').replace('M',' minutes').replace('H', 'heures')
+    }else{
+        prepTime = 'Pas'
+    }
+    if (recipe.hasOwnProperty("cookTime")){
+        cookTime = recipe["cookTime"].replace('PT','').replace('M',' minutes').replace('H', 'heures')
+    }else{
+        cookTime = 'pas'
+    }
+    newRecipeTime.textContent = `${prepTime} de préparation et ${cookTime} de cuisson`
 
     newRecipeName.addEventListener("click", function(){
         panel = document.getElementById('panel'+i)
