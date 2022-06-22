@@ -271,6 +271,13 @@ bar.addEventListener('keypress',async function (e) {
         recipeSpace.innerHTML = ""
         startIndex = 0
         displayResults(results.results,0)
+        recipenext.forEach(button =>{
+            button.removeAttribute('hidden')
+        })
+        recipeprev.forEach(button =>{
+            button.removeAttribute('hidden')
+        })
+
     }
 })
 
