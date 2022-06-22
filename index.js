@@ -1,4 +1,5 @@
-const recipeButton = document.querySelector("#recipebutton");
+const recipenext = document.querySelectorAll(".recipenext");
+const recipeprev = document.querySelectorAll(".recipeprev");
 const recipeHolder = document.querySelector("#recipeholder");
 
 //recipeButton.addEventListener('click', () => grabPage('blette'));
@@ -273,10 +274,21 @@ bar.addEventListener('keypress',async function (e) {
     }
 })
 
-recipeButton.addEventListener('click',() =>{
+recipenext.forEach(button =>{button.addEventListener('click',() =>{
     recipeSpace.innerHTML = ""
-    displayResults(results.results, startIndex+=10)
-})
+    displayResults(results.results, Math.min(startIndex+=NB_RESULTS,results.results.length - results.results.length %NB_RESULTS))
+    if (startIndex>results.results.length){
+        startIndex=results.results.length-NB_RESULTS
+    }
+})})
+
+recipeprev.forEach(button =>{button.addEventListener('click',() =>{
+    recipeSpace.innerHTML = ""
+    displayResults(results.results, Math.max(startIndex-=NB_RESULTS,0))
+    if (startIndex<0){
+        startIndex=0
+    }
+})})
 
 //initialize()
 
