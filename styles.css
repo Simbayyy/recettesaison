@@ -2,6 +2,7 @@ body{
     display: flex;
     flex-direction: column;
     font-family: 'Advent Pro', sans-serif;
+    font-size: 14pt
 }
 #header {
     background-color: #000080;
@@ -9,8 +10,14 @@ body{
 }
 
 #welcome {
-    font-size: larger;
+    font-size:20pt;
     font-weight: 600;
+}
+#inputbar {
+    max-width:300px;
+    margin: 10px;
+    height: 24px;
+    font-size: 12pt;
 }
 
 #page {

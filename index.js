@@ -131,28 +131,63 @@ function decodeHtml(html) {
     return txt.value;
 }
 
+let treatKeywords = function(string){
+    string = string.replace('biscuits-mignardises','Biscuits')
+    string = string.replace('poisson','Poisson')
+    string = string.replace('aperitif-tapas','Apéritif')
+    string = string.replace('de-fromage','Fromage')
+    string = string.replace('de-sauces','Sauces')
+    string = string.replace('entree','Entrées')
+    string = string.replace('dessert','Desserts')
+    string = string.replace('de-mignardises','Biscuits')
+    string = string.replace('plat','Plat')
+    string = string.replace('cocktail-et-boisson','Cocktail')
+    string = string.replace('de-viennoiserie','Viennoiserie')
+    string = string.replace('aperitif-antipasti','Apéritif')
+    string = string.replace('conserves-sauces-condiments','Condiments')
+    string = string.replace('pasta-risotto','Pâtes & risotto')
+    string = string.replace('recettes-salees','Salé')
+    string = string.replace('recettes-sucrees','Sucré')
+    string = string.replace('recettes-de-pains','Pains')
+    string = string.replace('regimes-speciaux','Régimes spéciaux')
+
+    if (string[1] === string[1].toLowerCase){
+
+        string = string[1].toUpperCase() + string[2,string.length]
+        if (string[string.length] != 's'){
+            string += 's'
+        }
+    }
+    return string
+
+
+}
+
 let createEntry2 = async function(recipe){
-    newRecipeContainer = document.createElement('a')
-    newRecipeContainer.setAttribute('class','recipecontainer')
+    container = document.createElement('a')
+    container.setAttribute('class','recipecontainer')
 
     newRecipeName = document.createElement('div')
     
     newRecipeName.setAttribute('class','recipename')
     newRecipeName.textContent = decodeHtml(recipe['name'])
-    newRecipeProperties = document.createElement('div')
-    newRecipeProperties.setAttribute('class','recipeprop')
+    properties = document.createElement('div')
+    properties.setAttribute('class','recipeprop')
 
     if (recipe.keyword != null){
-        newRecipeProperties.textContent = recipe.keyword.join(', ')
+        properties.textContent = recipe.keyword.join(', ')
+        properties.textContent = treatKeywords(properties.textContent)
     }
-    newRecipeContainer.setAttribute('href',recipe['url'])
 
 
-    newRecipeContainer.appendChild(newRecipeName)
-    newRecipeContainer.appendChild(newRecipeProperties)
+    container.setAttribute('href',recipe['url'])
+
+
+    container.appendChild(newRecipeName)
+    container.appendChild(properties)
     
 
-    recipeSpace.appendChild(newRecipeContainer)
+    recipeSpace.appendChild(container)
 }
 /*let createEntry = async function(recipe,i){
     newRecipeContainer = document.createElement('div')
