@@ -114,20 +114,46 @@ function shuffle(array) {
 let displayResults = function(results,startIndex){
     resultlen = results.length
 
-    if (randlist.length != resultlen){
-        list = [...Array(resultlen).keys()]
-        randlist = shuffle(list)
-    }
+
 
     for (i=startIndex;i<startIndex+NB_RESULTS;i++){
         if (i <resultlen){
-            createEntry(results[randlist[i]],i-startIndex)
+            createEntry2(results[i],i-startIndex)
         }
     }
 }
 recipeSpace = document.getElementById('recipeholder') 
 
-let createEntry = function(recipe,i){
+function decodeHtml(html) {
+    var txt = document.createElement("textarea");
+    txt.innerHTML = html;
+    return txt.value;
+}
+
+let createEntry2 = async function(recipe){
+    newRecipeContainer = document.createElement('a')
+    newRecipeContainer.setAttribute('class','recipecontainer')
+
+    newRecipeName = document.createElement('div')
+    
+    newRecipeName.setAttribute('class','recipename')
+    newRecipeName.textContent = decodeHtml(recipe['name'])
+    newRecipeProperties = document.createElement('div')
+    newRecipeProperties.setAttribute('class','recipeprop')
+
+    if (recipe.keyword != null){
+        newRecipeProperties.textContent = recipe.keyword.join(', ')
+    }
+    newRecipeContainer.setAttribute('href',recipe['url'])
+
+
+    newRecipeContainer.appendChild(newRecipeName)
+    newRecipeContainer.appendChild(newRecipeProperties)
+    
+
+    recipeSpace.appendChild(newRecipeContainer)
+}
+/*let createEntry = async function(recipe,i){
     newRecipeContainer = document.createElement('div')
     newRecipeContainer.setAttribute('class','recipeContainer')
     newRecipeContainer.setAttribute('id','container'+i)
@@ -144,20 +170,40 @@ let createEntry = function(recipe,i){
 
     newRecipeLink = document.createElement('a')
     newRecipeLink.setAttribute('href',recipe['url'])
+    newRecipeLink.setAttribute('class','recipelink')
     newRecipeLink.textContent = 'Lien vers la recette'
 
     newRecipeTime = document.createElement('div')
-    if (recipe.hasOwnProperty("prepTime")){
-        prepTime = recipe["prepTime"].replace('PT','').replace('M',' minutes').replace('H', 'heures')
+    newRecipeTime.setAttribute('class','recipetime')
+
+    if ((recipe.hasOwnProperty("prepTime")) && (recipe.prepTime != null)){
+        prepTime = recipe["prepTime"].replace('PT','').replace('M',' minutes ').replace('H', ' heures')+''
     }else{
-        prepTime = 'Pas'
+        prepTime = 'Pas '
     }
-    if (recipe.hasOwnProperty("cookTime")){
-        cookTime = recipe["cookTime"].replace('PT','').replace('M',' minutes').replace('H', 'heures')
+    if ((recipe.hasOwnProperty("cookTime")) && (recipe.cookTime != null)){
+        cookTime = recipe["cookTime"].replace('PT','').replace('M',' minutes ').replace('H', ' heures')+''
     }else{
-        cookTime = 'pas'
+        cookTime = 'pas '
     }
-    newRecipeTime.textContent = `${prepTime} de préparation et ${cookTime} de cuisson`
+
+    if (recipe.hasOwnProperty("ingredients")){
+        ingredientList = recipe['ingredients']
+    }else{
+        ingredientList = [["Pas d'ingrédients disponibles pour cette recette", ""]]
+    }
+
+    newRecipeIngredients = document.createElement('div')
+    newRecipeIngredients.setAttribute('class','ingredientlist')
+
+    ingredientList.forEach(ingredient => {
+        newRecipeIngredient = document.createElement('div')
+        newRecipeIngredient.setAttribute('class','ingredient')
+        newRecipeIngredient.textContent = ingredient[0].replace('tsp','càc').replace('tbsp','càs') + ' ' + ingredient[1]
+        newRecipeIngredients.appendChild(newRecipeIngredient)
+    })
+
+    newRecipeTime.textContent = `${prepTime}de préparation et ${cookTime}de cuisson`
 
     newRecipeName.addEventListener("click", function(){
         panel = document.getElementById('panel'+i)
@@ -167,14 +213,17 @@ let createEntry = function(recipe,i){
             panel.setAttribute('hidden', 'true')
         }
     })
+
+
     newRecipePanel.appendChild(newRecipeLink)
     newRecipePanel.appendChild(newRecipeTime)
+    newRecipePanel.appendChild(newRecipeIngredients)
     newRecipeContainer.appendChild(newRecipeName)
     newRecipeContainer.appendChild(newRecipePanel)
     
 
     recipeSpace.appendChild(newRecipeContainer)
-}
+}*/
 
 let clean = function(string){
     return encodeURIComponent(string.toLowerCase())
@@ -198,7 +247,7 @@ async function grabRecipes(string, amount=100, vg=0, sauce=0){
     return recipesFiltered
 }
 
-let NB_RESULTS =10
+let NB_RESULTS =12
 let results = []
 let vegetarianWords = ['ham','meat','chicken','lamb','bacon','fish','rib','beef','pork','ribs','shrimp','salmon','meatballs','meatloaf','meatball','meatloaves','tuna','duck','prosciutto']
 let saucewords = ['sauce','marinade']

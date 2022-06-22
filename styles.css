@@ -31,17 +31,36 @@ body{
     flex-wrap: wrap;
 }
 
-.recipeContainer {
+.recipecontainer {
     max-width: 400px;
     min-width: 300px;
     flex: 1 1 0%;
     height:fit-content;
     border: 1px solid black;
-    padding: 10px;
     margin: 10px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    color: black;
+    transition: 0.3s;
+    text-decoration: none;
 }
 
-.recipeName {
+.recipename {
     font-size: 24pt;
-    font-weight:500;
+    font-weight: 500;
+    color: black;
+}
+
+.recipeprop {
+    align-self: flex-end;
+    width:fit-content;
+    max-width: 100%;
+}
+.recipecontainer:hover {
+    background-color: grey;
+}
+
+[hidden]{
+    display:none;
 }
