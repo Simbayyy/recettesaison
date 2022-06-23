@@ -266,7 +266,11 @@ let clean = function(string){
 }
 
 async function grabRecipes(string, amount=100, vg=0, sauce=0){
-    
+    if (box.checked){
+        vg =1
+    }else{
+        vg=0
+    }
     var myHeaders = new Headers()
     myHeaders.append("Content-Type", "application/x-www-form-urlencoded")
     requestParams = {
@@ -293,13 +297,11 @@ bar.addEventListener('keypress',async function (e) {
         bar.setAttribute('disabled','true')
         let vg = 0
         let sauce =0
-        if (box.checked){
-            vg =1
-        }
+
         if (saucebox.checked){
             sauce =1
         }
-        results = await grabRecipes(clean(bar.value), vg=vg,sauce=sauce)
+        results = await grabRecipes(clean(bar.value),vg,sauce)
         entry=treatEntry(bar.value)
         bar.value = ""
         bar.removeAttribute('disabled')
