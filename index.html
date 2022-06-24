@@ -14,29 +14,36 @@
     <div id="header">
 
     </div>
-    <div id="page">
-        <div id="welcome">Bienvenue sur mon site de recettes !</div>
-        <div id="intro">Vous trouverez sur cette page une moyen de trouver des recettes de saison</div>
-        <div id="selectionarea">
-            <input type="text" id="inputbar" placeholder="Recherche un ingrédient ici">
-            <div id="favoris"> Afficher les favoris</div>
+    <div id="container">
+        <div class="sidebar"></div>    
+        <div id="page">
+            <div id="welcome">Bienvenue sur mon site de recettes !</div>
+            <div id="intro">Vous trouverez sur cette page une moyen de trouver des recettes de saison</div>
+            <div id="selectionarea">
+                <input type="text" id="inputbar" placeholder="Recherche un ingrédient ici">
+                <div id="favoris"> Afficher les favoris</div>
+            </div>
+            <div class="check"><input type="checkbox" id="vegetarian"> Recettes végétariennes ? </div>
+            <div hidden="true"><input type="checkbox" id="sauce"> Sauces ?</div>
+            <div class="buttonholder">
+                <div class="recipeprev recipebutton" hidden="true">Page précédente</div>
+                <div class="pagenum" hidden="true"></div>
+                <div class="recipenext recipebutton" hidden="true">Page suivante</div>
+            </div>
+            <div id="loading" hidden="">Recettes en chargement</div>
+            <div id="recipeholder"></div>
+            <div class="buttonholder">
+                <div class="recipeprev recipebutton" hidden="true">Page précédente</div>
+                <div class="pagenum" hidden="true"></div>
+                <div class="recipenext recipebutton" hidden="true">Page suivante</div>
+
+            </div>
+            <div id="footer">Un site de Simon Baillet fait avec soin par mes petites mains</div>
+
         </div>
-        <div><input type="checkbox" id="vegetarian"> Coche pour n'avoir que des recettes végétariennes </div>
-        <div hidden="true"><input type="checkbox" id="sauce"> Sauces ?</div>
-        <div class="buttonholder">
-            <div class="recipeprev recipebutton" hidden="true">Page précédente</div>
-            <div class="pagenum" hidden="true"></div>
-            <div class="recipenext recipebutton" hidden="true">Page suivante</div>
-        </div>
-        <div id="loading" hidden="">Recettes en chargement</div>
-        <div id="recipeholder"></div>
-        <div class="buttonholder">
-            <div class="recipeprev recipebutton" hidden="true">Page précédente</div>
-            <div class="pagenum" hidden="true"></div>
-            <div class="recipenext recipebutton" hidden="true">Page suivante</div>
-        </div>
-        <div id="footer">Un site de Simon Baillet fait avec soin par mes petites mains</div>
+        <div class="sidebar"></div>    
     </div>
+
     <script src="./index.js"></script>
 </body>
 </html>

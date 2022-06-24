@@ -2,7 +2,8 @@ body{
     display: flex;
     flex-direction: column;
     font-family: 'Advent Pro', sans-serif;
-    font-size: 14pt
+    font-size: 14pt;
+    min-height:100%;
 }
 #header {
     background-color: #000080;
@@ -21,7 +22,9 @@ body{
     justify-content: space-between;
     flex-direction: row-reverse;
     align-items: center;
-    padding-top: 5px;
+    padding-top: 10px;
+    padding-left: 5px;
+    padding-bottom: 5px;
 }
 
 .star:before {
@@ -46,6 +49,8 @@ body{
     padding: 5px;
     font-weight:500;
     font-size: 16pt;
+    flex-basis: 1;
+    width: fit-content;
 }
 
 #favoris:hover {
@@ -64,8 +69,12 @@ body{
     background-color: teal;
 }
 
+.check {
+    padding:5px;
+}
 .star, .star:before{
     border-color: black;
+    padding:1px;
     clip-path: polygon(
         50% 0%,
         63% 38%,
@@ -81,8 +90,14 @@ body{
 }
 
 @keyframes example {
-    0%   {font-size: 24pt;}
-    100% {font-size: 20pt;}
+    0%   {
+        font-size: 24pt;
+        color: #aaa;    
+    }
+    100% {
+        font-size: 20pt;
+        color: #555;    
+    }
   }
 #loading {
     padding:10px;
@@ -90,7 +105,7 @@ body{
     font-weight: 500;
     font-size: 20pt;
     align-self: center;
-    animation: example 5s alternate infinite ease-in-out;
+    animation: example 1s alternate infinite ease-out;
 }
 
 #welcome {
@@ -98,22 +113,35 @@ body{
     font-weight: 600;
 }
 #inputbar {
-    max-width:300px;
     margin: 10px;
-    height: 24px;
+    height: 28px;
     font-size: 12pt;
+    flex-basis: 2;
+    flex-grow: 1;
 }
 
 #page {
     display: flex;
     flex-direction: column;
     padding: 20px;
+    flex: 4;
+}
+
+#container {
+    display: flex;
+    width: 100%;
+}
+
+.sidebar {
+    flex-grow: 1;
+    background-color: #ddd;
 }
 
 #footer {
     border-top: 1px solid #aaaaaa;
     padding: 0px 10px;
     margin-top: 15px;
+    text-align: center;
 }
 
 #recipeholder {
@@ -123,8 +151,8 @@ body{
 }
 
 .recipecontainer {
-    max-width: 400px;
-    min-width: 300px;
+    max-width: 500px;
+    min-width: 250px;
     flex: 1 1 0%;
     height:fit-content;
     border: 1px solid black;
@@ -154,6 +182,8 @@ body{
     width:fit-content;
     max-width: 100%;
     max-height: fit-content;
+    text-align: right;
+    padding-left: 10px;
 }
 
 

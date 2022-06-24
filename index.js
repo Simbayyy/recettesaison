@@ -131,6 +131,18 @@ let displayFav = function(){
         recipeprev.forEach(button =>{
             button.removeAttribute('hidden')
         })
+    }else{
+        startIndex = 0;
+        pagenums.forEach(pagenum=>{
+            pagenum.setAttribute('hidden','true')
+        })
+        recipenext.forEach(button =>{
+            button.setAttribute('hidden','true')
+        })
+        recipeprev.forEach(button =>{
+            button.setAttribute('hidden','true')
+        })
+        recipeSpace.innerHTML = "Pas de favoris pour le moment ! Clique sur l'étoile sur une recette pour les enregistrer."
     }
 } 
 
@@ -197,7 +209,7 @@ let clean = function(string){
 }
 let refreshFav = function(){
     stringfav = localStorage.getItem('saved')
-    if (stringfav.length > 10)
+    if ((stringfav != null) & (stringfav.length > 10))
     {
         let listFav = stringfav.slice(stringfav.indexOf('{')+1,stringfav.length-1)
         listFav=listFav.split('},{')
@@ -208,6 +220,10 @@ let refreshFav = function(){
                 favRecipes.recipes.push(recipejson)
             }
         })
+    }else{
+        localStorage.setItem('saved','')
+        stringfav = ''
+        favRecipes = {'recipes':[]}
     }
     favRecipes.recipes = favRecipes.recipes.filter((v,i,a)=>a.findIndex(v2=>(v2.name===v.name))===i)
 }
