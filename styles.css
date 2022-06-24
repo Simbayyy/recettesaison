@@ -3,7 +3,7 @@ body{
     flex-direction: column;
     font-family: 'Advent Pro', sans-serif;
     font-size: 14pt;
-    min-height:100%;
+    min-height:100vh;
 }
 #header {
     background-color: #000080;
@@ -89,6 +89,11 @@ body{
     );
 }
 
+#buffer {
+    flex-basis: auto;
+    flex-grow: 1;
+}
+
 @keyframes example {
     0%   {
         font-size: 24pt;
@@ -106,6 +111,7 @@ body{
     font-size: 20pt;
     align-self: center;
     animation: example 1s alternate infinite ease-out;
+    height:30pt;
 }
 
 #welcome {
@@ -130,6 +136,7 @@ body{
 #container {
     display: flex;
     width: 100%;
+    flex: 1;
 }
 
 .sidebar {
