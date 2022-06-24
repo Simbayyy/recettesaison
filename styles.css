@@ -9,6 +9,62 @@ body{
     padding: 15px;
 }
 
+.star {
+    cursor:default;
+    width: 100px;
+    height:100px;
+    background-color: black;
+}
+
+.star:before {
+    content: '';
+    width: 98px;
+    height: 98px;
+    background-color: white;
+    display: block;
+    transition-duration: 200ms;
+}
+.star.activated::before {
+    content: '';
+    width: 98px;
+    height: 98px;
+    background-color: teal;
+    display: block;
+    transition-duration: 200ms;
+}
+.star:hover:before {
+    background-color: teal;
+}
+
+.star, .star:before{
+    border-color: black;
+    clip-path: polygon(
+        50% 0%,
+        63% 38%,
+        100% 38%,
+        69% 59%,
+        82% 100%,
+        50% 75%,
+        18% 100%,
+        31% 59%,
+        0% 38%,
+        37% 38%
+    );
+}
+
+@keyframes example {
+    0%   {font-size: 24pt;}
+    100% {font-size: 20pt;}
+  }
+#loading {
+    padding:10px;
+    color: #555;
+    font-weight: 500;
+    font-size: 20pt;
+    align-self: center;
+    animation: example 5s alternate infinite ease-in-out;
+}
+
 #welcome {
     font-size:20pt;
     font-weight: 600;
@@ -70,9 +126,7 @@ body{
     width:fit-content;
     max-width: 100%;
 }
-.recipecontainer:hover {
-    background-color: grey;
-}
+
 
 [hidden]{
     display:none;

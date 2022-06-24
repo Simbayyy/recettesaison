@@ -1,26 +1,8 @@
 const recipenext = document.querySelectorAll(".recipenext");
 const recipeprev = document.querySelectorAll(".recipeprev");
 const recipeHolder = document.querySelector("#recipeholder");
-
-//recipeButton.addEventListener('click', () => grabPage('blette'));
-
-const grabPage = function(string){
-    url = `https://www.marmiton.org/recettes/recherche.aspx?aqt=${string}`
-    x=new XMLHttpRequest();
-    x.open('GET', 'https://calm-sierra-13075.herokuapp.com/'+url);
-    x.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-    x.onload = function() {
-        parser=new DOMParser();
-        page = parser.parseFromString(x.responseText,"text/html");  
-        recipes = page.querySelectorAll('.gACiYG');
-        recipes.forEach((recipe) =>{
-            recipeHolder.textContent += 'success'
-            recipeHolder.textContent += '<br>' + recipe.getAttribute('href')
-        })
-        };
-    x.send();
-     
-}
+const pagenums = document.querySelectorAll(".pagenum");
+let favRecipes = {'recipes':[]}
 bar = document.getElementById('inputbar')
 box = document.getElementById('vegetarian')
 saucebox = document.getElementById('sauce')
@@ -29,46 +11,7 @@ let chocolateRecipes
 let randlist = []
 let startIndex
 
-async function grabList(){
-    let recipes
-    await fetch("RecipeList.json")
-        .then(response => response.json())
-        .then(json => recipes= json);
-    document.getElementById('inputbar').disabled = false;
-    return recipes
-}
 
-let sort =  function(listToSort,keyword){
-    return listToSort.filter(function(recipe){
-        if (Array(keyword)[0] === keyword){
-            ok = true;
-            keyword.forEach(word =>{
-                if (ok == true){
-                    ok = (cleanWord(' '+recipe.name+' ').includes(' '+cleanWord(word)+' '))
-                }
-            })
-            return ok;
-        }else{
-            return (cleanWord(recipe.name).includes(cleanWord(keyword)));
-        }
-    });
-}
-
-let sortExcept =  function(listToSort,keyword){
-    return listToSort.filter(function(recipe){
-        ok = true;
-        if (Array(keyword)[0] === keyword){
-            keyword.forEach(word =>{
-                if (ok == true){
-                    ok = !(cleanWord(' '+recipe.name+' ').includes(' '+cleanWord(word)+' '))
-                }
-            })
-            return ok;
-        }else{
-            return !(cleanWord(recipe.name).includes(keyword));
-        }
-    });
-}
 
 let cleanWord = function(word){
     return word.toLowerCase().replace(/[ \n,;.:/!?\-%&'\(`\)\$€]/g,' ').replace(/\u0153/g,'oe')
@@ -115,6 +58,9 @@ function shuffle(array) {
 let displayResults = function(results,startIndex){
     resultlen = results.length
 
+    pagenums.forEach(pagenum=>{
+        pagenum.textContent = 'Page '+ Math.round(1+startIndex/NB_RESULTS) + '/'+ Math.ceil(results.length/ NB_RESULTS)
+    })
 
 
     for (i=startIndex;i<startIndex+NB_RESULTS;i++){
@@ -173,7 +119,11 @@ let createEntry2 = async function(recipe){
     newRecipeName.textContent = decodeHtml(recipe['name'])
     properties = document.createElement('div')
     properties.setAttribute('class','recipeprop')
-
+    container.addEventListener('mouseenter', function(e){
+        e.target.style.backgroundColor =  'grey'})
+    container.addEventListener('mouseleave', function(e){
+        e.target.style.backgroundColor =  'white'})
+    
     if (recipe.keyword != null){
         properties.textContent = recipe.keyword.join(', ')
         properties.textContent = treatKeywords(properties.textContent)
@@ -182,90 +132,60 @@ let createEntry2 = async function(recipe){
 
     container.setAttribute('href',recipe['url'])
 
+    star = document.createElement('div')
+    star.setAttribute('class','star')
+    if (JSON.stringify(favRecipes.recipes).includes(JSON.stringify(recipe['url']))){
+        star.setAttribute('class','star activated')
+    }
+    star.addEventListener('mouseover', (e)=>{
+        e.currentTarget.parentNode.parentNode.style.backgroundColor = 'white'
+    })
+    star.addEventListener('mouseout', (e)=>{
+        e.currentTarget.parentNode.parentNode.style.backgroundColor = 'grey'
+    })
+    star.addEventListener('click', (e)=>{
+        e.preventDefault();
+        jsonrecipe = JSON.stringify(recipe)
+        if (!e.currentTarget.classList.contains('activated')){
+            localStorage.setItem('saved', localStorage.getItem('saved') + ',' +jsonrecipe)
+            e.target.setAttribute('class','star activated' )
+        }else{
+            localStorage.setItem('saved',  localStorage.getItem('saved').replace(','+jsonrecipe,''))
+            e.target.setAttribute('class','star' )
+        }
+        refreshFav()
+    })
+
+    containerbottom = document.createElement('div')
 
     container.appendChild(newRecipeName)
-    container.appendChild(properties)
-    
+    containerbottom.appendChild(properties)
+    containerbottom.appendChild(star)
 
+    container.appendChild(containerbottom)
     recipeSpace.appendChild(container)
 }
-/*let createEntry = async function(recipe,i){
-    newRecipeContainer = document.createElement('div')
-    newRecipeContainer.setAttribute('class','recipeContainer')
-    newRecipeContainer.setAttribute('id','container'+i)
-
-    newRecipeName = document.createElement('div')
-    
-    newRecipeName.setAttribute('class','recipeName')
-    newRecipeName.setAttribute('id','name'+i)
-    newRecipeName.textContent = recipe['name']
-    newRecipePanel = document.createElement('div')
-    newRecipePanel.setAttribute('class','recipePanel')
-    newRecipePanel.setAttribute('id','panel'+i)
-    newRecipePanel.setAttribute('hidden','true')
-
-    newRecipeLink = document.createElement('a')
-    newRecipeLink.setAttribute('href',recipe['url'])
-    newRecipeLink.setAttribute('class','recipelink')
-    newRecipeLink.textContent = 'Lien vers la recette'
-
-    newRecipeTime = document.createElement('div')
-    newRecipeTime.setAttribute('class','recipetime')
-
-    if ((recipe.hasOwnProperty("prepTime")) && (recipe.prepTime != null)){
-        prepTime = recipe["prepTime"].replace('PT','').replace('M',' minutes ').replace('H', ' heures')+''
-    }else{
-        prepTime = 'Pas '
-    }
-    if ((recipe.hasOwnProperty("cookTime")) && (recipe.cookTime != null)){
-        cookTime = recipe["cookTime"].replace('PT','').replace('M',' minutes ').replace('H', ' heures')+''
-    }else{
-        cookTime = 'pas '
-    }
-
-    if (recipe.hasOwnProperty("ingredients")){
-        ingredientList = recipe['ingredients']
-    }else{
-        ingredientList = [["Pas d'ingrédients disponibles pour cette recette", ""]]
-    }
-
-    newRecipeIngredients = document.createElement('div')
-    newRecipeIngredients.setAttribute('class','ingredientlist')
-
-    ingredientList.forEach(ingredient => {
-        newRecipeIngredient = document.createElement('div')
-        newRecipeIngredient.setAttribute('class','ingredient')
-        newRecipeIngredient.textContent = ingredient[0].replace('tsp','càc').replace('tbsp','càs') + ' ' + ingredient[1]
-        newRecipeIngredients.appendChild(newRecipeIngredient)
-    })
-
-    newRecipeTime.textContent = `${prepTime}de préparation et ${cookTime}de cuisson`
-
-    newRecipeName.addEventListener("click", function(){
-        panel = document.getElementById('panel'+i)
-        if (panel.getAttribute('hidden') == 'true'){
-            panel.removeAttribute('hidden')
-        }else{
-            panel.setAttribute('hidden', 'true')
-        }
-    })
-
-
-    newRecipePanel.appendChild(newRecipeLink)
-    newRecipePanel.appendChild(newRecipeTime)
-    newRecipePanel.appendChild(newRecipeIngredients)
-    newRecipeContainer.appendChild(newRecipeName)
-    newRecipeContainer.appendChild(newRecipePanel)
-    
-
-    recipeSpace.appendChild(newRecipeContainer)
-}*/
 
 let clean = function(string){
     return encodeURIComponent(string.toLowerCase())
 }
-
-async function grabRecipes(string, amount=100, vg=0, sauce=0){
+let refreshFav = function(){
+    stringfav = localStorage.getItem('saved')
+    if (stringfav.length > 10)
+    {
+        let listFav = stringfav.slice(stringfav.indexOf('{')+1,stringfav.length-1)
+        listFav=listFav.split('},{')
+        favRecipes = {'recipes':[]}
+        listFav.forEach(recipe=>{
+            if (recipe.length >10){
+                recipejson = JSON.parse(`{${recipe}}`)
+                favRecipes.recipes.push(recipejson)
+            }
+        })
+    }
+    favRecipes.recipes = favRecipes.recipes.filter((v,i,a)=>a.findIndex(v2=>(v2.name===v.name))===i)
+}
+async function grabRecipes(string, amount=amount, vg=0, sauce=0){
     if (box.checked){
         vg =1
     }else{
@@ -274,13 +194,13 @@ async function grabRecipes(string, amount=100, vg=0, sauce=0){
     var myHeaders = new Headers()
     myHeaders.append("Content-Type", "application/x-www-form-urlencoded")
     requestParams = {
-        method: 'POST',
-        headers: myHeaders,
-        amount:amount,
-        vg:vg
+        'method': 'POST',
+        'headers': myHeaders,
+        'amount':amount,
+        'vg':vg
     }
     let recipesFiltered
-    await fetch(`https://calm-sierra-13075.herokuapp.com/https://thawing-taiga-23689.herokuapp.com/recipes/${string}/${vg}/${sauce}`)
+    await fetch(`https://calm-sierra-13075.herokuapp.com/https://thawing-taiga-23689.herokuapp.com/recipes/${string}/${vg}/${amount}`)
         .then(response => response.json())
         .then(json => recipesFiltered= json);
     console.log(recipesFiltered)
@@ -291,29 +211,58 @@ let NB_RESULTS =12
 let results = []
 let vegetarianWords = ['ham','meat','chicken','lamb','bacon','fish','rib','beef','pork','ribs','shrimp','salmon','meatballs','meatloaf','meatball','meatloaves','tuna','duck','prosciutto']
 let saucewords = ['sauce','marinade']
+let loading = document.getElementById('loading')
+let amount = 240
 
 bar.addEventListener('keypress',async function (e) {
     if (e.key === 'Enter') {
         bar.setAttribute('disabled','true')
         let vg = 0
         let sauce =0
-
         if (saucebox.checked){
             sauce =1
         }
-        results = await grabRecipes(clean(bar.value),vg,sauce)
-        entry=treatEntry(bar.value)
+        loading.removeAttribute('hidden')
+        pagenums.forEach(pagenum=>{
+            pagenum.setAttribute('hidden','true')
+        })
+        box.disabled = true
+
+        results = await grabRecipes(clean(bar.value),amount,vg,sauce)
+        loading.setAttribute('hidden','true')
+        localStorage.setItem('lastQuery', JSON.stringify(results));
+        if (results.results.length !=0){
+            recipeSpace.innerHTML = ""
+
+            pagenums.forEach(pagenum=>{
+                pagenum.removeAttribute('hidden')
+                pagenum.textContent = 'Page 1/'+ Math.ceil(1+results.results.length/ NB_RESULTS)
+            })
+            entry=treatEntry(bar.value)
+            displayResults(results.results,0)
+            recipenext.forEach(button =>{
+                button.removeAttribute('hidden')
+            })
+            recipeprev.forEach(button =>{
+                button.removeAttribute('hidden')
+            })
+        }else{
+            recipeSpace.innerHTML = ""
+
+            recipeHolder.textContent = 'Pas de recettes correspondantes'
+            recipenext.forEach(button =>{
+                button.setAttribute('hidden','true')
+            })
+            recipeprev.forEach(button =>{
+                button.setAttribute('hidden','true')
+            })            
+        }
         bar.value = ""
         bar.removeAttribute('disabled')
-        recipeSpace.innerHTML = ""
         startIndex = 0
-        displayResults(results.results,0)
-        recipenext.forEach(button =>{
-            button.removeAttribute('hidden')
-        })
-        recipeprev.forEach(button =>{
-            button.removeAttribute('hidden')
-        })
+        box.disabled = false
+
+
 
     }
 })
@@ -333,7 +282,31 @@ recipeprev.forEach(button =>{button.addEventListener('click',() =>{
         startIndex=0
     }
 })})
+refreshFav()
 
+if (localStorage.getItem('lastQuery') != null) {
+    results = JSON.parse(localStorage.getItem('lastQuery'))
+    if (results.results.length !=0){
+        recipeSpace.innerHTML = ""
+
+        pagenums.forEach(pagenum=>{
+            pagenum.removeAttribute('hidden')
+            pagenum.textContent = 'Page 1/'+ Math.ceil(1+results.results.length/ NB_RESULTS)
+        })
+        entry=treatEntry(bar.value)
+        displayResults(results.results,0)
+        recipenext.forEach(button =>{
+            button.removeAttribute('hidden')
+        })
+        recipeprev.forEach(button =>{
+            button.removeAttribute('hidden')
+        })
+    }
+}
+
+if (localStorage.getItem('saved') == null){
+    localStorage.setItem('saved','')
+}
 //initialize()
 
 
