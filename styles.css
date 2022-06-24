@@ -158,7 +158,7 @@ body{
 }
 
 .recipecontainer {
-    max-width: 500px;
+    max-width: 400px;
     min-width: 250px;
     flex: 1 1 0%;
     height:fit-content;
