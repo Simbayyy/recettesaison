@@ -11,23 +11,35 @@ body{
 
 .star {
     cursor:default;
-    width: 100px;
-    height:100px;
+    width: 40px;
+    height: 40px;
     background-color: black;
+}
+
+.containerbottom {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row-reverse;
+    align-items: center;
+    padding-top: 5px;
 }
 
 .star:before {
     content: '';
-    width: 98px;
-    height: 98px;
+    width: 38px;
+    height: 38px;
     background-color: white;
     display: block;
     transition-duration: 200ms;
 }
+.recipebutton:hover {
+    cursor: pointer;
+    color:green;
+}
+
 .star.activated::before {
-    content: '';
-    width: 98px;
-    height: 98px;
+    width: 38px;
+    height: 38px;
     background-color: teal;
     display: block;
     transition-duration: 200ms;
@@ -125,6 +137,7 @@ body{
     align-self: flex-end;
     width:fit-content;
     max-width: 100%;
+    max-height: fit-content;
 }
 
 

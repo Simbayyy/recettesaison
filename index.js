@@ -6,6 +6,7 @@ let favRecipes = {'recipes':[]}
 bar = document.getElementById('inputbar')
 box = document.getElementById('vegetarian')
 saucebox = document.getElementById('sauce')
+favbutton = document.getElementById('favoris')
 
 let chocolateRecipes 
 let randlist = []
@@ -109,6 +110,30 @@ let treatKeywords = function(string){
 
 }
 
+let displayFav = function(){
+
+    results.results = favRecipes.recipes
+    if (results.results.length > 0){
+        startIndex = 0;
+
+        recipeSpace.innerHTML = ""
+
+        pagenums.forEach(pagenum=>{
+            pagenum.removeAttribute('hidden')
+            pagenum.textContent = 'Page 1/'+ Math.ceil(1+results.results.length/ NB_RESULTS)
+        })
+        entry=treatEntry(bar.value)
+        displayResults(results.results,0)
+        refreshFav()
+        recipenext.forEach(button =>{
+            button.removeAttribute('hidden')
+        })
+        recipeprev.forEach(button =>{
+            button.removeAttribute('hidden')
+        })
+    }
+} 
+
 let createEntry2 = async function(recipe){
     container = document.createElement('a')
     container.setAttribute('class','recipecontainer')
@@ -157,6 +182,7 @@ let createEntry2 = async function(recipe){
     })
 
     containerbottom = document.createElement('div')
+    containerbottom.setAttribute('class', 'containerbottom')
 
     container.appendChild(newRecipeName)
     containerbottom.appendChild(properties)
@@ -213,6 +239,8 @@ let vegetarianWords = ['ham','meat','chicken','lamb','bacon','fish','rib','beef'
 let saucewords = ['sauce','marinade']
 let loading = document.getElementById('loading')
 let amount = 240
+
+favbutton.addEventListener('click',function(){displayFav()})
 
 bar.addEventListener('keypress',async function (e) {
     if (e.key === 'Enter') {
@@ -287,6 +315,7 @@ refreshFav()
 if (localStorage.getItem('lastQuery') != null) {
     results = JSON.parse(localStorage.getItem('lastQuery'))
     if (results.results.length !=0){
+        startIndex = 0
         recipeSpace.innerHTML = ""
 
         pagenums.forEach(pagenum=>{
