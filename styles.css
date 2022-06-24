@@ -36,6 +36,22 @@ body{
     cursor: pointer;
     color:green;
 }
+#selectionarea {
+    display: flex;
+    justify-content: space-between;
+}
+
+#favoris {
+    align-self: center;
+    padding: 5px;
+    font-weight:500;
+    font-size: 16pt;
+}
+
+#favoris:hover {
+    color:red;
+    cursor:pointer;
+}
 
 .star.activated::before {
     width: 38px;
