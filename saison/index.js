@@ -2,7 +2,7 @@ const recipenext = document.querySelectorAll(".recipenext");
 const recipeprev = document.querySelectorAll(".recipeprev");
 const recipeHolder = document.querySelector("#recipeholder");
 const pagenums = document.querySelectorAll(".pagenum");
-const bar = document.getElementById('inputbar')
+const searchbutton = document.getElementById('searchbutton')
 const box = document.getElementById('vegetarian')
 const saucebox = document.getElementById('sauce')
 let favbutton = document.getElementById('favoris')
@@ -11,7 +11,13 @@ const recipeSpace = document.getElementById('recipeholder')
 let startIndex
 
 let favRecipes = {'recipes':[]}
-
+let NB_RESULTS =12
+let results = []
+let vegetarianWords = ['ham','meat','chicken','lamb','bacon','fish','rib','beef','pork','ribs','shrimp','salmon','meatballs','meatloaf','meatball','meatloaves','tuna','duck','prosciutto']
+let saucewords = ['sauce','marinade']
+let loading = document.getElementById('loading')
+let numResults = 240
+let processing = false
 
 let cleanWord = function(word){
     return word.toLowerCase().replace(/[ \n,;.:/!?\-%&'\(`\)\$€]/g,' ').replace(/\u0153/g,'oe')
@@ -155,7 +161,9 @@ let refreshFav = function(){
     }
     favRecipes.recipes = favRecipes.recipes.filter((v,i,a)=>a.findIndex(v2=>(v2.name===v.name))===i)
 }
-async function grabRecipes(string, amount=amount, vg=0, sauce=0){
+async function grabRecipes(amount=numResults){
+    const d = new Date();
+    let month = d.getMonth()
     if (box.checked){
         vg =1
     }else{
@@ -170,42 +178,43 @@ async function grabRecipes(string, amount=amount, vg=0, sauce=0){
         'vg':vg
     }
     let recipesFiltered
-    await fetch(`https://calm-sierra-13075.herokuapp.com/https://thawing-taiga-23689.herokuapp.com/recipes/search/${string}/${vg}/${amount}`)
+    await fetch(`https://calm-sierra-13075.herokuapp.com/https://thawing-taiga-23689.herokuapp.com/recipes/month/${month}/${vg}/${amount}`)
         .then(response => response.json())
         .then(json => recipesFiltered= json);
     console.log(recipesFiltered)
     return recipesFiltered
 }
 
-let NB_RESULTS =12
-let results = []
-let vegetarianWords = ['ham','meat','chicken','lamb','bacon','fish','rib','beef','pork','ribs','shrimp','salmon','meatballs','meatloaf','meatball','meatloaves','tuna','duck','prosciutto']
-let saucewords = ['sauce','marinade']
-let loading = document.getElementById('loading')
-let amount = 240
 
 favbutton.addEventListener('click',function(){displayFav()})
 
-bar.addEventListener('keypress',async function (e) {
-    if (e.key === 'Enter') {
-        bar.setAttribute('disabled','true')
-        let vg = 0
-        let sauce =0
-        if (saucebox.checked){
-            sauce =1
-        }
+async function loadrecipes(){
+    if (processing == false){
+        recipeSpace.innerHTML = ""
+
+        processing = true
+        searchbutton.setAttribute('class','processing')
         loading.removeAttribute('hidden')
         pagenums.forEach(pagenum=>{
             pagenum.setAttribute('hidden','true')
         })
         box.disabled = true
+        recipenext.forEach(button =>{
+            button.setAttribute('hidden','true')
+        })
+        recipeprev.forEach(button =>{
+            button.setAttribute('hidden','true')
+        })            
 
-        results = await grabRecipes(clean(bar.value),amount,vg,sauce)
+        results = await grabRecipes()
+
+        box.disabled = false
+
         loading.setAttribute('hidden','true')
-        localStorage.setItem('lastQuery', JSON.stringify(results));
+
         if (results.results.length !=0){
             recipeSpace.innerHTML = ""
-
+    
             pagenums.forEach(pagenum=>{
                 pagenum.removeAttribute('hidden')
                 pagenum.textContent = 'Page 1/'+ Math.ceil(1+results.results.length/ NB_RESULTS)
@@ -219,24 +228,16 @@ bar.addEventListener('keypress',async function (e) {
             })
         }else{
             recipeSpace.innerHTML = ""
-
+    
             recipeHolder.textContent = 'Pas de recettes correspondantes'
-            recipenext.forEach(button =>{
-                button.setAttribute('hidden','true')
-            })
-            recipeprev.forEach(button =>{
-                button.setAttribute('hidden','true')
-            })            
         }
-        bar.value = ""
-        bar.removeAttribute('disabled')
-        startIndex = 0
-        box.disabled = false
-
-
-
+        processing=false
+        searchbutton.removeAttribute('class')
     }
-})
+}
+
+searchbutton.addEventListener('click',loadrecipes)
+
 
 recipenext.forEach(button =>{button.addEventListener('click',() =>{
     recipeSpace.innerHTML = ""
@@ -253,32 +254,14 @@ recipeprev.forEach(button =>{button.addEventListener('click',() =>{
         startIndex=0
     }
 })})
-refreshFav()
 
-if (localStorage.getItem('lastQuery') != null) {
-    results = JSON.parse(localStorage.getItem('lastQuery'))
-    if (results.results.length !=0){
-        startIndex = 0
-        recipeSpace.innerHTML = ""
-
-        pagenums.forEach(pagenum=>{
-            pagenum.removeAttribute('hidden')
-            pagenum.textContent = 'Page 1/'+ Math.ceil(1+results.results.length/ NB_RESULTS)
-        })
-        displayResults(results.results,0)
-        recipenext.forEach(button =>{
-            button.removeAttribute('hidden')
-        })
-        recipeprev.forEach(button =>{
-            button.removeAttribute('hidden')
-        })
-    }
-}
 
 if (localStorage.getItem('saved') == null){
     localStorage.setItem('saved','')
 }
 //initialize()
 
+loadrecipes()
+refreshFav()
 
 

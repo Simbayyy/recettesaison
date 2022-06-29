@@ -44,13 +44,28 @@ body{
     justify-content: space-between;
 }
 
-#favoris {
+#favoris,#searchbutton {
     align-self: center;
     padding: 5px;
     font-weight:500;
     font-size: 16pt;
     flex-basis: 1;
     width: fit-content;
+}
+
+#searchbutton:hover {
+    color:green;
+    cursor:pointer;
+}
+
+#link {
+    color: inherit;
+    font-weight: bold;
+}
+
+#searchbutton.processing {
+    color:grey;
+    cursor: default;
 }
 
 #favoris:hover {

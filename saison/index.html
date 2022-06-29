@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="../styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
     <link href="https://fonts.googleapis.com/css2?family=Advent+Pro:wght@400;500;600;700&display=swap" rel="stylesheet"> 
-    <title>Recettes</title>
+    <title>Recettes de saison</title>
 </head>
 <body>
     <div id="header">
@@ -17,9 +17,9 @@
         <div class="sidebar"></div>    
         <div id="page">
             <div id="welcome">Bienvenue sur mon site de recettes !</div>
-            <div id="intro">Vous trouverez sur cette page outil de recherche de recettes. Pour les recettes de saison, <a id="link" href="saison/">c'est ici !</a></div>
+            <div id="intro">Vous trouverez sur cette page des recettes de saison. Pour la recherche libre, <a id="link" href="../">c'est ici !</a></div>
             <div id="selectionarea">
-                <input type="text" id="inputbar" placeholder="Recherche un ingrédient ici">
+                <div id="searchbutton" class="processing"> Autres recettes ? </div>
                 <div id="favoris"> Afficher les favoris</div>
             </div>
             <div class="check"><input type="checkbox" id="vegetarian"> Recettes végétariennes ? </div>
